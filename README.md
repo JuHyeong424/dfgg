@@ -2,7 +2,7 @@
 
 **Item build recommendations for the game you're actually in.**
 
-Live service: http://3.39.39.73/
+Live service: https://2026-dfgg.vercel.app/
 
 dfgg recommends League of Legends item builds based on the specific ten champions in your
 match — not on a fixed, statistics-averaged build path.
