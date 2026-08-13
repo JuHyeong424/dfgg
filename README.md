@@ -47,6 +47,7 @@ comparable rank brackets, then filters and re-orders them against the enemy team
 control density, healing and shielding, AD/AP damage split, and tank count.
 
 ![Home](/image.png)
+<img width="413" height="889" alt="image" src="https://github.com/user-attachments/assets/1c781bb1-34c8-4c0c-92bd-1720790b64d6" />
 
 ---
 
