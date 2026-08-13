@@ -47,6 +47,15 @@ comparable rank brackets, then filters and re-orders them against the enemy team
 control density, healing and shielding, AD/AP damage split, and tank count.
 
 ![Home](/image.png)
+
+### 2. Let the desktop app fill it in for you (in development)
+Skip the typing. The desktop client reads the ten champions straight from your client and sends the recommendation to an overlay on top of the game.
+
+During champion select it reads the League Client session, so you get a build before the game even loads. Once the match starts it switches to Riot's Live Client Data API. That second source is what makes normal games work — in blind pick the enemy team stays hidden through champion select, so reading the live match is the only way to know what you are actually up against. Draft queues get the recommendation early; every other queue gets it the moment the game begins.
+
+The overlay sits in the corner of the game, updates as picks land, and clicks pass straight through it so it never gets in the way of your own champion select. Nothing about your client leaves your machine — only champion names and positions are sent to our server. The app does not read game memory, automate input, or modify the game in any way.
+
+Desktop image
 <img width="413" height="889" alt="image" src="https://github.com/user-attachments/assets/1c781bb1-34c8-4c0c-92bd-1720790b64d6" />
 
 ---
@@ -55,6 +64,10 @@ control density, healing and shielding, AD/AP damage split, and tank count.
 
 - [v] Recommendations past the third core item, including late-game situational swaps
 - [v] A one-line, plain-language rationale attached to every recommended item
+- [v] Automatic champion detection in champion select and in game
+    Overlay support in exclusive fullscreen
+    Movable and toggleable overlay
+    Signed installer for public distribution
 - [ ] Position-specific handling — support items, jungle timing
 - [ ] Domain and HTTPS for the production deployment
 
