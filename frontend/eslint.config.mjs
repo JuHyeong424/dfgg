@@ -7,13 +7,13 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', '*.config.js'] },
+  { ignores: ['dist/**', 'node_modules/**', '**/*.config.js', 'app/desktop/**'] },
 
   js.configs.recommended,
   ...tseslint.configs.recommended,
 
   {
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['app/**/*.{ts,tsx}'],
     languageOptions: {
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },

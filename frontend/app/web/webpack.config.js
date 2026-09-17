@@ -6,7 +6,7 @@ module.exports = (_env, argv) => {
   const isProduction = argv.mode === 'production';
 
   return {
-    entry: './src/web/main.tsx',
+    entry: './main.tsx',
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: 'bundle.js',
