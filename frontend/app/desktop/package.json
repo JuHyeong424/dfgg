@@ -2,15 +2,15 @@
   "name": "desktop",
   "version": "0.1.0",
   "private": true,
-  "main": "main.js",
+  "main": "dist/main/main.js",
   "scripts": {
     "start": "webpack server --mode development",
-    "build": "tsc --noEmit && webpack build --mode production",
+    "build:main": "tsc -p tsconfig.main.json",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "typecheck": "tsc --noEmit",
-    "electron:start": "electron .",
-    "electron:dev": "concurrently \"pnpm start\" \"wait-on http://localhost:3001 && pnpm electron:start\""
+    "electron:start": "pnpm build:main && electron .",
+    "electron:dev": "concurrently -k \"pnpm start\" \"wait-on http://localhost:3001 && pnpm electron:start\""
   },
   "dependencies": {
     "@types/node": "^16.18.126",
