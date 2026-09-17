@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron/main');
+const { app, BrowserWindow, ipcMain } = require('electron/main');
 const path = require('node:path');
 const isDev = require('electron-is-dev');
 
@@ -15,11 +15,12 @@ function createWindow() {
     win.loadURL('http://localhost:3001');
     win.webContents.openDevTools();
   } else {
-    win.loadFile(path.join(__dirname, 'build/index.html'));
+    win.loadFile(path.join(__dirname, '../../build/index.html'));
   }
 }
 
 app.whenReady().then(() => {
+  ipcMain.handle('ping', () => 'pong');
   createWindow();
 
   app.on('activate', () => {

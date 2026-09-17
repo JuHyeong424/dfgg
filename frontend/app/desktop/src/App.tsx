@@ -1,24 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
+  const [versions, setVersions] = useState({ node: '', chrome: '', electron: '' });
+  const [pong, setPong] = useState('');
+
+  useEffect(() => {
+    window.versions.ping().then((result) => {
+      setPong(result as string);
+    });
+
+    setVersions({
+      node: window.versions.node(),
+      chrome: window.versions.chrome(),
+      electron: window.versions.electron(),
+    });
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <p>
+        node: {versions.node}, chrome: {versions.chrome}, electron: {versions.electron}
+      </p>
+      <p>pong: {pong}</p>
     </div>
   );
 }
