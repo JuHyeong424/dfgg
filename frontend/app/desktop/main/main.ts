@@ -1,6 +1,5 @@
-const { app, BrowserWindow, ipcMain } = require('electron/main');
-const path = require('node:path');
-const isDev = require('electron-is-dev');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import path from 'node:path';
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -11,7 +10,7 @@ function createWindow() {
     },
   });
 
-  if (isDev) {
+  if (!app.isPackaged) {
     win.loadURL('http://localhost:3001');
     win.webContents.openDevTools();
   } else {
