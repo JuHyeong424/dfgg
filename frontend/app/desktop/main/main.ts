@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
+import { getLockfileContent } from './lcu/credentials';
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -28,6 +29,8 @@ app.whenReady().then(() => {
     }
   });
 });
+
+const lockfileContent = getLockfileContent();
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
