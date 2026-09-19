@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
-import { getLockfileContent } from './lcu/credentials';
+import { registerIpcHandlers } from './ipc';
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -19,8 +19,8 @@ function createWindow() {
   }
 }
 
-app.whenReady().then(() => {
-  ipcMain.handle('ping', () => 'pong');
+app.whenReady().then(async () => {
+  registerIpcHandlers();
   createWindow();
 
   app.on('activate', () => {
@@ -29,8 +29,6 @@ app.whenReady().then(() => {
     }
   });
 });
-
-const lockfileContent = getLockfileContent();
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

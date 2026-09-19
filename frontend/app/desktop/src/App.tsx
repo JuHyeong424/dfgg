@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import './App.css';
+import type { Summoner } from '../types';
 
 function App() {
   const [versions, setVersions] = useState({ node: '', chrome: '', electron: '' });
-  const [pong, setPong] = useState('');
+  const [currentSummoner, setCurrentSummoner] = useState<Summoner | null>(null);
 
   useEffect(() => {
-    window.versions.ping().then((result) => {
-      setPong(result as string);
-    });
+    window.lcu
+      .currentSummoner()
+      .then((result) => {
+        setCurrentSummoner(result);
+      })
+      .catch(() => console.error('소환사 정보를 불러오지 못했습니다.'));
 
     setVersions({
       node: window.versions.node(),
@@ -22,7 +26,7 @@ function App() {
       <p>
         node: {versions.node}, chrome: {versions.chrome}, electron: {versions.electron}
       </p>
-      <p>pong: {pong}</p>
+      <p>currentSummoner: {currentSummoner ? `${currentSummoner.gameName}` : '불러오는 중...'}</p>
     </div>
   );
 }

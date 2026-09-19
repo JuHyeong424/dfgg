@@ -1,3 +1,5 @@
+import { Summoner } from '../types';
+
 export {};
 
 declare global {
@@ -6,7 +8,9 @@ declare global {
       node: () => string;
       chrome: () => string;
       electron: () => string;
-      ping: () => Promise<unknown>;
+    };
+    lcu: {
+      currentSummoner: () => Promise<Summoner | null>;
     };
   }
 }
