@@ -25,7 +25,7 @@ function createWindow() {
 app.whenReady().then(async () => {
   registerIpcHandlers();
   const window = createWindow();
-  startLcuConnection(window);
+  startLcuConnection();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
