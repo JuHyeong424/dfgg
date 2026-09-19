@@ -3,8 +3,8 @@ import './App.css';
 import type { Summoner } from '../types';
 
 function App() {
-  const [versions, setVersions] = useState({ node: '', chrome: '', electron: '' });
   const [currentSummoner, setCurrentSummoner] = useState<Summoner | null>(null);
+  const [lcuPhase, setLcuPhase] = useState<string | null>(null);
 
   useEffect(() => {
     window.lcu
@@ -14,19 +14,19 @@ function App() {
       })
       .catch(() => console.error('소환사 정보를 불러오지 못했습니다.'));
 
-    setVersions({
-      node: window.versions.node(),
-      chrome: window.versions.chrome(),
-      electron: window.versions.electron(),
+    const unsubscribe = window.lcu.onPhaseChange((phase) => {
+      setLcuPhase(phase);
     });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (
     <div className="App">
-      <p>
-        node: {versions.node}, chrome: {versions.chrome}, electron: {versions.electron}
-      </p>
       <p>currentSummoner: {currentSummoner ? `${currentSummoner.gameName}` : '불러오는 중...'}</p>
+      <p>현재 상태: {lcuPhase ?? '연결 중'}</p>
     </div>
   );
 }

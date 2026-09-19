@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import { registerIpcHandlers } from './ipc';
+import { startLcuConnection } from './lcu/connection';
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -17,11 +18,14 @@ function createWindow() {
   } else {
     win.loadFile(path.join(__dirname, '../../build/index.html'));
   }
+
+  return win;
 }
 
 app.whenReady().then(async () => {
   registerIpcHandlers();
-  createWindow();
+  const window = createWindow();
+  startLcuConnection(window);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

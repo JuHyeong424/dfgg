@@ -1,22 +1,11 @@
 import { contextBridge, ipcRenderer } from 'electron';
-
-contextBridge.exposeInMainWorld('versions', {
-  node: () => process.versions.node,
-  chrome: () => process.versions.chrome,
-  electron: () => process.versions.electron,
-});
+import { GameflowPhase } from '../types';
 
 contextBridge.exposeInMainWorld('lcu', {
   currentSummoner: () => ipcRenderer.invoke('lcu:current-summoner'),
+  onPhaseChange: (callback: (phase: GameflowPhase) => void) => {
+    const listener = (_: unknown, phase: GameflowPhase) => callback(phase);
+    ipcRenderer.on('lcu:phase', listener);
+    return () => ipcRenderer.removeListener('lcu:phase', listener);
+  },
 });
-
-// window.addEventListener('DOMContentLoaded', () => {
-//   const replaceText = (selector, text) => {
-//     const element = document.getElementById(selector);
-//     if (element) element.innerText = text;
-//   };
-
-//   for (const type of ['chrome', 'node', 'electron']) {
-//     replaceText(`${type}-version`, process.versions[type]);
-//   }
-// });
