@@ -4,6 +4,7 @@ import { RIOT_ROOT_CERT } from './riotCert';
 
 const LCU_REQUEST_TIMEOUT_MS = 5000;
 
+// lcu api 요청 함수
 export function lcuRequest<T>(lockfile: Lockfile, endpoint: string): Promise<T | null> {
   const { port, password } = lockfile;
   const auth = Buffer.from(`riot:${password}`).toString('base64');

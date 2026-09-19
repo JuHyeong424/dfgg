@@ -1,6 +1,7 @@
 import { getLockfileContent } from './lockfile';
 import { getCurrentSummoner } from './endpoints';
 
+// lockfile 찾고 현재 소환사 정보 요청하기
 export async function fetchCurrentSummoner() {
   const lockfileContent = getLockfileContent();
 
