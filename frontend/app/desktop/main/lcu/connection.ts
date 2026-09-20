@@ -2,6 +2,7 @@ import { getLockfileContent } from './lockfile';
 import { connectLcuSocket } from './socket';
 import { getLcuState, setLcuPhase, setLcuStatus } from './state';
 import { fetchGameflowPhase } from './service';
+import { LCU_URI } from './events';
 import type WebSocket from 'ws';
 
 const WAIT_FOR_CLIENT_MS = 3000; // 롤이 꺼져 있을 때
@@ -45,7 +46,9 @@ function connect() {
 
   const ws = connectLcuSocket(lockfile, (payload) => {
     if (ws !== activeSocket) return;
-    setLcuPhase(payload.data);
+    if (payload.uri === LCU_URI.gameflowPhase) {
+      setLcuPhase(payload.data);
+    }
   });
   activeSocket = ws;
 

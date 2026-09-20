@@ -1,3 +1,5 @@
+import type { LcuEventMap } from './main/lcu/events';
+
 export type Lockfile = {
   name: string;
   pid: string;
@@ -14,11 +16,17 @@ export interface Summoner {
   summonerLevel: number;
 }
 
-export type LcuEvent<T = GameflowPhase> = {
-  data: T;
-  eventType: 'Create' | 'Update' | 'Delete';
-  uri: string;
-};
+export type LcuEvent = {
+  [K in keyof LcuEventMap]: {
+    data: LcuEventMap[K];
+    eventType: 'Create' | 'Update' | 'Delete';
+    uri: K;
+  };
+}[keyof LcuEventMap];
+
+/*
+| { uri: '/lol-gameflow/v1/gameflow-phase', data: GmaeflowPhase}
+*/
 
 export type GameflowPhase =
   | 'None'

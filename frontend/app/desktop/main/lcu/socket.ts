@@ -1,8 +1,9 @@
 import WebSocket from 'ws';
-import { LcuEvent, Lockfile } from '../../types';
+import type { LcuEvent, Lockfile } from '../../types';
 import { RIOT_ROOT_CERT } from './riotCert';
 
 const SUBSCRIPTIONS = ['OnJsonApiEvent_lol-gameflow_v1_gameflow-phase'];
+const HANDSHAKE_TIMEOUT_MS = 5000;
 
 // lcu socket 연결 함수
 export function connectLcuSocket(lockfile: Lockfile, onEvent: (payload: LcuEvent) => void) {
@@ -12,6 +13,7 @@ export function connectLcuSocket(lockfile: Lockfile, onEvent: (payload: LcuEvent
   const ws = new WebSocket(`wss://127.0.0.1:${port}`, {
     headers: { Authorization: `Basic ${auth}` },
     ca: RIOT_ROOT_CERT,
+    handshakeTimeout: HANDSHAKE_TIMEOUT_MS,
   });
 
   ws.on('open', () => {
