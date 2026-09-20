@@ -12,8 +12,10 @@ let timer: NodeJS.Timeout | null = null;
 let retryDelay = MIN_RETRY_MS;
 let port: string | null = null;
 let activeSocket: WebSocket | null = null;
+let stopped: boolean = false;
 
 function scheduleRetry(interval: number) {
+  if (stopped) return;
   if (timer !== null) return;
 
   console.log(`${interval}ms 뒤 재시도`);
@@ -25,6 +27,7 @@ function scheduleRetry(interval: number) {
 }
 
 function connect() {
+  if (stopped) return;
   const lockfile = getLockfileContent();
 
   if (!lockfile) {
@@ -86,4 +89,19 @@ function connect() {
 // lcu 연결 시작 함수
 export function startLcuConnection() {
   connect();
+}
+
+export function stopLcuConnection() {
+  stopped = true;
+
+  if (timer !== null) {
+    clearTimeout(timer);
+    timer = null;
+  }
+
+  if (activeSocket === null) return;
+
+  activeSocket.removeAllListeners();
+  activeSocket.close();
+  activeSocket = null;
 }

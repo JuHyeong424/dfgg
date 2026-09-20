@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import { registerIpcHandlers } from './ipc';
-import { startLcuConnection } from './lcu/connection';
+import { startLcuConnection, stopLcuConnection } from './lcu/connection';
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -33,6 +33,8 @@ app.whenReady().then(async () => {
     }
   });
 });
+
+app.on('will-quit', stopLcuConnection);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
