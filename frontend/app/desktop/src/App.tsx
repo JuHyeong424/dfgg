@@ -14,13 +14,6 @@ function App() {
   const [lcuPhase, setLcuPhase] = useState<string | null>(null);
 
   useEffect(() => {
-    window.lcu
-      .currentSummoner()
-      .then((result) => {
-        setCurrentSummoner(result);
-      })
-      .catch(() => console.error('소환사 정보를 불러오지 못했습니다.'));
-
     window.lcu.getState().then((state) => {
       setLcuState(state.status);
       setLcuPhase(state.phase);
@@ -39,6 +32,20 @@ function App() {
       unsubscribePhase();
     };
   }, []);
+
+  useEffect(() => {
+    if (lcuState !== 'connected') {
+      setCurrentSummoner(null);
+      return;
+    }
+
+    window.lcu
+      .currentSummoner()
+      .then((result) => {
+        setCurrentSummoner(result);
+      })
+      .catch(() => console.error('소환사 정보를 불러오지 못했습니다.'));
+  }, [lcuState]);
 
   return (
     <div className="App">

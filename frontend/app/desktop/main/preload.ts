@@ -8,8 +8,8 @@ contextBridge.exposeInMainWorld('lcu', {
 
   onStatusChange: (callback: (status: LcuStatus) => void) => {
     const listener = (_: IpcRendererEvent, status: LcuStatus) => callback(status);
-    ipcRenderer.on('lcu:get-state', listener);
-    return () => ipcRenderer.removeListener('lcu:get-state', listener);
+    ipcRenderer.on('lcu:status', listener);
+    return () => ipcRenderer.removeListener('lcu:status', listener);
   },
 
   onPhaseChange: (callback: (phase: GameflowPhase) => void) => {
