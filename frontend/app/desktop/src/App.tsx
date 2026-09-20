@@ -1,9 +1,16 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import type { Summoner } from '../types';
+import type { LcuStatus, Summoner } from '../types';
+
+const STATUS_TEXT: Record<LcuStatus, string> = {
+  disconnected: '롤 클라이언트 대기 중',
+  connecting: '연결 중',
+  connected: '연결됨',
+};
 
 function App() {
   const [currentSummoner, setCurrentSummoner] = useState<Summoner | null>(null);
+  const [lcuState, setLcuState] = useState<LcuStatus | null>(null);
   const [lcuPhase, setLcuPhase] = useState<string | null>(null);
 
   useEffect(() => {
@@ -14,19 +21,32 @@ function App() {
       })
       .catch(() => console.error('소환사 정보를 불러오지 못했습니다.'));
 
-    const unsubscribe = window.lcu.onPhaseChange((phase) => {
+    window.lcu.getState().then((state) => {
+      setLcuState(state.status);
+      setLcuPhase(state.phase);
+    });
+
+    const unsubscribeStatus = window.lcu.onStatusChange((status) => {
+      setLcuState(status);
+    });
+
+    const unsubscribePhase = window.lcu.onPhaseChange((phase) => {
       setLcuPhase(phase);
     });
 
     return () => {
-      unsubscribe();
+      unsubscribeStatus();
+      unsubscribePhase();
     };
   }, []);
 
   return (
     <div className="App">
-      <p>currentSummoner: {currentSummoner ? `${currentSummoner.gameName}` : '불러오는 중...'}</p>
-      <p>현재 상태: {lcuPhase ?? '연결 중'}</p>
+      <p>연결: {lcuState ? STATUS_TEXT[lcuState] : '확인 중'}</p>
+      <p>게임 단계: {lcuPhase ?? '-'}</p>
+      <p>
+        소환사: {currentSummoner ? `${currentSummoner.gameName}#${currentSummoner.tagLine}` : '-'}
+      </p>
     </div>
   );
 }

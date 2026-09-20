@@ -1,4 +1,4 @@
-import { type Summoner, type Lockfile } from '../../types';
+import { Lockfile } from '../../types';
 import https from 'node:https';
 import { RIOT_ROOT_CERT } from './riotCert';
 

@@ -1,20 +1,33 @@
 import { getLockfileContent } from './lockfile';
 import { connectLcuSocket } from './socket';
-import { broadcastToAllWindows } from '../ipc/broadcast';
-import { LcuEvent } from '../../types';
+import { getLcuState, setLcuPhase, setLcuStatus } from './state';
+import { fetchGameflowPhase } from './service';
 
 // lcu 연결 시작 함수
 export function startLcuConnection() {
   const lockfile = getLockfileContent();
   if (!lockfile) {
+    setLcuStatus('disconnected');
     console.error('롤 클라이언트가 꺼져 있어 소켓에 연결하지 않습니다');
     return;
   }
 
+  setLcuStatus('connecting');
+
   const ws = connectLcuSocket(lockfile, (payload) => {
-    broadcastToAllWindows('lcu:phase', payload.data);
+    setLcuPhase(payload.data);
   });
 
-  ws.on('open', () => console.log('LCU 소켓 연결'));
-  ws.on('close', () => console.log('LCU 소켓 연결 끊김'));
+  ws.on('open', async () => {
+    setLcuStatus('connected');
+
+    const state = getLcuState();
+    try {
+      const phase = await fetchGameflowPhase();
+      if (phase && state.status === 'connected' && getLcuState().phase === null) setLcuPhase(phase);
+    } catch (error) {
+      console.debug('phase 조회 실패', error);
+    }
+  });
+  ws.on('close', () => setLcuStatus('disconnected'));
 }

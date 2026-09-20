@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import { registerIpcHandlers } from './ipc';
 import { startLcuConnection } from './lcu/connection';
@@ -24,7 +24,7 @@ function createWindow() {
 
 app.whenReady().then(async () => {
   registerIpcHandlers();
-  const window = createWindow();
+  createWindow();
   startLcuConnection();
 
   app.on('activate', () => {

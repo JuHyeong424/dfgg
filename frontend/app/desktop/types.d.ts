@@ -17,7 +17,7 @@ export interface Summoner {
 export type LcuEvent<T = GameflowPhase> = {
   data: T;
   eventType: 'Create' | 'Update' | 'Delete';
-  url: string;
+  uri: string;
 };
 
 export type GameflowPhase =
@@ -31,3 +31,9 @@ export type GameflowPhase =
   | 'WaitingForStats'
   | 'PreEndOfGame'
   | 'EndOfGame';
+
+export type LcuStatus = 'disconnected' | 'connecting' | 'connected';
+export type LcuState = {
+  status: LcuStatus;
+  phase: GameflowPhase | null;
+};

@@ -1,8 +1,11 @@
 import { getLockfileContent } from './lockfile';
-import { getCurrentSummoner } from './endpoints';
+import { getCurrentSummoner, getGameflowPhase } from './endpoints';
+import { GameflowPhase, Lockfile, Summoner } from '../../types';
 
-// lockfile 찾고 현재 소환사 정보 요청하기
-export async function fetchCurrentSummoner() {
+async function withLockfile<T>(
+  errorLabel: string,
+  callback: (lockfileContent: Lockfile) => Promise<T>,
+) {
   const lockfileContent = getLockfileContent();
 
   if (!lockfileContent) {
@@ -11,9 +14,23 @@ export async function fetchCurrentSummoner() {
   }
 
   try {
-    return await getCurrentSummoner(lockfileContent);
+    return await callback(lockfileContent);
   } catch (error) {
-    console.error('소환사 정보 요청 실패', error);
+    console.error(errorLabel, error);
     throw error;
   }
+}
+
+// lockfile 찾고 현재 소환사 정보 요청하기
+export function fetchCurrentSummoner() {
+  return withLockfile<Summoner | null>('소환사 정보 요청 실패', (lockfileContent) => {
+    return getCurrentSummoner(lockfileContent);
+  });
+}
+
+// 앱 최초 실행 시 현재 phase 가져오기
+export function fetchGameflowPhase() {
+  return withLockfile<GameflowPhase | null>('현재 game flow phase 요청 실패', (lockfileContent) => {
+    return getGameflowPhase(lockfileContent);
+  });
 }

@@ -1,10 +1,19 @@
-import { contextBridge, ipcRenderer } from 'electron';
-import { GameflowPhase } from '../types';
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { GameflowPhase, LcuStatus } from '../types';
 
 contextBridge.exposeInMainWorld('lcu', {
   currentSummoner: () => ipcRenderer.invoke('lcu:current-summoner'),
+
+  getState: () => ipcRenderer.invoke('lcu:get-state'),
+
+  onStatusChange: (callback: (status: LcuStatus) => void) => {
+    const listener = (_: IpcRendererEvent, status: LcuStatus) => callback(status);
+    ipcRenderer.on('lcu:get-state', listener);
+    return () => ipcRenderer.removeListener('lcu:get-state', listener);
+  },
+
   onPhaseChange: (callback: (phase: GameflowPhase) => void) => {
-    const listener = (_: unknown, phase: GameflowPhase) => callback(phase);
+    const listener = (_: IpcRendererEvent, phase: GameflowPhase) => callback(phase);
     ipcRenderer.on('lcu:phase', listener);
     return () => ipcRenderer.removeListener('lcu:phase', listener);
   },

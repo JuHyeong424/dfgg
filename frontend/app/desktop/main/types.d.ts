@@ -1,5 +1,6 @@
-import { GameflowPhase } from '../types';
+import { GameflowPhase, LcuStatus } from '../types';
 
 export type BroadcastChannels = {
-  'lcu:phase': GameflowPhase;
+  'lcu:status': LcuStatus;
+  'lcu:phase': GameflowPhase | null;
 };
