@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import { registerIpcHandlers } from './ipc';
 import { startLcuConnection, stopLcuConnection } from './lcu/connection';
+import { initLivePolling, stopLivePolling } from './live/poller';
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -26,6 +27,7 @@ app.whenReady().then(async () => {
   registerIpcHandlers();
   createWindow();
   startLcuConnection();
+  initLivePolling();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -34,7 +36,10 @@ app.whenReady().then(async () => {
   });
 });
 
-app.on('will-quit', stopLcuConnection);
+app.on('will-quit', () => {
+  stopLivePolling();
+  stopLcuConnection();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

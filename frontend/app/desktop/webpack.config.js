@@ -75,8 +75,9 @@ module.exports = (_env, argv) => {
       historyApiFallback: true,
       proxy: [
         {
-          context: ['/recommendations'],
+          context: ['/api', '/feedback'],
           target: 'http://localhost:8080',
+          // target: 'http://3.36.100.9',
           changeOrigin: true,
         },
       ],

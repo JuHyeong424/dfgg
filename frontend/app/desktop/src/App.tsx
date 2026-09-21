@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import type { LcuStatus, Summoner } from '../types';
+import type { RecommendedItem, LcuStatus, Summoner } from '../types';
 
 const STATUS_TEXT: Record<LcuStatus, string> = {
   disconnected: '롤 클라이언트 대기 중',
@@ -12,6 +12,7 @@ function App() {
   const [currentSummoner, setCurrentSummoner] = useState<Summoner | null>(null);
   const [lcuState, setLcuState] = useState<LcuStatus | null>(null);
   const [lcuPhase, setLcuPhase] = useState<string | null>(null);
+  const [items, setItems] = useState<RecommendedItem[] | null>(null);
 
   useEffect(() => {
     window.lcu.getState().then((state) => {
@@ -27,9 +28,14 @@ function App() {
       setLcuPhase(phase);
     });
 
+    const unsubscribedItems = window.lcu.onItemsRecommendationChange((items) => {
+      setItems(items);
+    });
+
     return () => {
       unsubscribeStatus();
       unsubscribePhase();
+      unsubscribedItems();
     };
   }, []);
 
@@ -54,6 +60,34 @@ function App() {
       <p>
         소환사: {currentSummoner ? `${currentSummoner.gameName}#${currentSummoner.tagLine}` : '-'}
       </p>
+      <div>
+        {items?.map((value, index) => (
+          <div>
+            <p>{value.name}</p>
+            <img src={value.imageUrl} />
+            {value.description.counter.map((counter, index) => (
+              <div>
+                <p>{counter.name}</p>
+                <img src={counter.imageUrl} />
+              </div>
+            ))}
+            {value.description.ally.map((ally, index) => (
+              <div>
+                <p>{ally.name}</p>
+                <img src={ally.name} />
+              </div>
+            ))}
+            <p>
+              아이템 설명:{' '}
+              {value.description.traits.map((traits, index) => (
+                <>
+                  <p>{traits}</p>
+                </>
+              ))}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,9 +1,10 @@
-import { GameflowPhase, LcuStatus, Summoner, LcuState } from '../types';
+import type { GameflowPhase, LcuStatus, Summoner, LcuState, RecommendedItem } from '../types';
 
 export {};
 
 type StatusListener = (status: LcuStatus) => void;
 type PhaseListener = (phase: GameflowPhase) => void;
+type ItemsListener = (items: RecommendedItem[]) => void;
 type Unsubscribe = () => void;
 
 declare global {
@@ -13,6 +14,7 @@ declare global {
       getState: () => Promise<LcuState>;
       onStatusChange: (callback: StatusListener) => Unsubscribe;
       onPhaseChange: (callback: PhaseListener) => Unsubscribe;
+      onItemsRecommendationChange: (callback: ItemsListener) => Unsubscribe;
     };
   }
 }

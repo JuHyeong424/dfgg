@@ -1,5 +1,5 @@
 import { getLockfileContent } from './lockfile';
-import { getCurrentSummoner, getGameflowPhase } from './endpoints';
+import { getCurrentSummoner, getGameflowPhase, getGameVersion } from './endpoints';
 import { GameflowPhase, Lockfile, Summoner } from '../../types';
 
 async function withLockfile<T>(
@@ -33,4 +33,8 @@ export function fetchGameflowPhase() {
   return withLockfile<GameflowPhase | null>('현재 game flow phase 요청 실패', (lockfileContent) => {
     return getGameflowPhase(lockfileContent);
   });
+}
+
+export function fetchGameVersion() {
+  return withLockfile('패치버전 요청 실패', (lockfile) => getGameVersion(lockfile));
 }
