@@ -68,6 +68,19 @@ function toComponentItemIds(list: DDragonItemList): Set<number> {
   return new Set(ids);
 }
 
+function toStartingItemIds(list: DDragonItemList): Set<number> {
+  const ids = Object.entries(list.data)
+    .filter(([, item]) => {
+      const isBase = (item.from?.length ?? 0) === 0 && (item.into?.length ?? 0) === 0;
+      const isLaneOrJungle = item.tags.includes('Lane') || item.tags.includes('Jungle');
+      const isCheap = item.gold.total > 0 && item.gold.total <= 1000;
+      return isBase && isLaneOrJungle && isCheap;
+    })
+    .map(([id]) => Number(id));
+
+  return new Set(ids);
+}
+
 // 챔피언, 아이템 정보 가져오기
 async function load(): Promise<{
   version: string;
@@ -81,12 +94,15 @@ async function load(): Promise<{
     fetchItemList(version[0]),
   ]);
 
+  const componentItemIds = toComponentItemIds(itemList);
+  const startingItemIds = toStartingItemIds(itemList);
+
   return {
     version: version[0],
     championNames: Object.fromEntries(
       Object.values(championList.data).map((champion) => [champion.id, champion.name]),
     ),
-    componentItemIds: toComponentItemIds(itemList),
+    componentItemIds: new Set([...componentItemIds, ...startingItemIds]),
   };
 }
 

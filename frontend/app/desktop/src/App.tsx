@@ -1,12 +1,64 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import type { RecommendedItem, LcuStatus, Summoner } from '../types';
+import type { NamedEntry, RecommendedItem, LcuStatus, Summoner } from '../types';
 
 const STATUS_TEXT: Record<LcuStatus, string> = {
   disconnected: '롤 클라이언트 대기 중',
   connecting: '연결 중',
   connected: '연결됨',
 };
+
+function ChampionChip({ champion }: { champion: NamedEntry }) {
+  return (
+    <li className="chip">
+      <img className="chip-image" src={champion.imageUrl} alt="" />
+      <span>{champion.name}</span>
+    </li>
+  );
+}
+
+function ItemCard({ item }: { item: RecommendedItem }) {
+  const { counter, ally, traits } = item.description;
+
+  return (
+    <article className="card">
+      <header className="card-header">
+        <img className="item-image" src={item.imageUrl} alt="" />
+        <h2 className="item-name">{item.name}</h2>
+      </header>
+
+      {traits.length > 0 && (
+        <ul className="traits">
+          {traits.map((trait) => (
+            <li key={trait}>{trait}</li>
+          ))}
+        </ul>
+      )}
+
+      {counter.length > 0 && (
+        <section className="reason">
+          <h3 className="reason-title">상대하기 좋은 챔피언</h3>
+          <ul className="chips">
+            {counter.map((champion) => (
+              <ChampionChip key={champion.id} champion={champion} />
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {ally.length > 0 && (
+        <section className="reason">
+          <h3 className="reason-title">시너지 좋은 아군</h3>
+          <ul className="chips">
+            {ally.map((champion) => (
+              <ChampionChip key={champion.id} champion={champion} />
+            ))}
+          </ul>
+        </section>
+      )}
+    </article>
+  );
+}
 
 function App() {
   const [currentSummoner, setCurrentSummoner] = useState<Summoner | null>(null);
@@ -20,22 +72,14 @@ function App() {
       setLcuPhase(state.phase);
     });
 
-    const unsubscribeStatus = window.lcu.onStatusChange((status) => {
-      setLcuState(status);
-    });
-
-    const unsubscribePhase = window.lcu.onPhaseChange((phase) => {
-      setLcuPhase(phase);
-    });
-
-    const unsubscribedItems = window.lcu.onItemsRecommendationChange((items) => {
-      setItems(items);
-    });
+    const unsubscribeStatus = window.lcu.onStatusChange(setLcuState);
+    const unsubscribePhase = window.lcu.onPhaseChange(setLcuPhase);
+    const unsubscribeItems = window.lcu.onItemsRecommendationChange(setItems);
 
     return () => {
       unsubscribeStatus();
       unsubscribePhase();
-      unsubscribedItems();
+      unsubscribeItems();
     };
   }, []);
 
@@ -47,47 +91,37 @@ function App() {
 
     window.lcu
       .currentSummoner()
-      .then((result) => {
-        setCurrentSummoner(result);
-      })
+      .then(setCurrentSummoner)
       .catch(() => console.error('소환사 정보를 불러오지 못했습니다.'));
   }, [lcuState]);
 
+  const isInGame = lcuPhase === 'InProgress';
+
   return (
-    <div className="App">
-      <p>연결: {lcuState ? STATUS_TEXT[lcuState] : '확인 중'}</p>
-      <p>게임 단계: {lcuPhase ?? '-'}</p>
-      <p>
-        소환사: {currentSummoner ? `${currentSummoner.gameName}#${currentSummoner.tagLine}` : '-'}
-      </p>
-      <div>
-        {items?.map((value, index) => (
-          <div>
-            <p>{value.name}</p>
-            <img src={value.imageUrl} />
-            {value.description.counter.map((counter, index) => (
-              <div>
-                <p>{counter.name}</p>
-                <img src={counter.imageUrl} />
-              </div>
+    <div className="app">
+      <header className="status-bar">
+        <span className={`badge badge-${lcuState ?? 'unknown'}`}>
+          {lcuState ? STATUS_TEXT[lcuState] : '확인 중'}
+        </span>
+        <span className="status-item">{lcuPhase ?? '-'}</span>
+        <span className="status-item status-summoner">
+          {currentSummoner ? `${currentSummoner.gameName}#${currentSummoner.tagLine}` : '-'}
+        </span>
+      </header>
+
+      <main className="content">
+        {items && items.length > 0 ? (
+          <div className="cards">
+            {items.map((item) => (
+              <ItemCard key={item.id} item={item} />
             ))}
-            {value.description.ally.map((ally, index) => (
-              <div>
-                <p>{ally.name}</p>
-                <img src={ally.name} />
-              </div>
-            ))}
-            <p>
-              아이템 설명:{' '}
-              {value.description.traits.map((traits, index) => (
-                <>
-                  <p>{traits}</p>
-                </>
-              ))}
-            </p>
           </div>
-        ))}
-      </div>
+        ) : (
+          <p className="empty">
+            {isInGame ? '추천 아이템을 기다리는 중입니다.' : '게임에 입장하면 아이템을 추천합니다.'}
+          </p>
+        )}
+      </main>
     </div>
   );
 }

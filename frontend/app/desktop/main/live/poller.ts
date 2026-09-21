@@ -10,7 +10,7 @@ const POLL_INTERVAL_MS = 2000;
 
 let timer: NodeJS.Timeout | null = null;
 let polling: boolean = false;
-let lastItemIds: number[] = [];
+let lastItemIds: number[] | null = null;
 let myRiotId: string | null = null;
 let patch: string | null = null;
 
@@ -57,7 +57,7 @@ async function tick() {
     if (myPlayers) {
       const itemIds = extractItemIds(myPlayers, componentItemIds);
 
-      if (!sameItems(itemIds, lastItemIds)) {
+      if (lastItemIds === null || !sameItems(itemIds, lastItemIds)) {
         if (!players || !myRiotId || !patch || !championNames || !componentItemIds) return;
 
         console.log('아이템 변경', itemIds);
@@ -96,7 +96,7 @@ export function stopLivePolling() {
     timer = null;
   }
 
-  lastItemIds = [];
+  lastItemIds = null;
   myRiotId = null;
   patch = null;
 }
