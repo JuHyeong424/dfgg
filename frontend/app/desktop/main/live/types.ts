@@ -1,3 +1,20 @@
+export interface DDragonItemList {
+  type: 'item';
+  version: string;
+  data: Record<string, DDragonItem>; // 키 = '3006' 처럼 id 문자열
+}
+
+export interface DDragonItem {
+  name: string;
+  description: string;
+  gold: { base: number; total: number; sell: number; purchasable: boolean };
+  tags: string[]; // 'Boots', 'Damage' 등
+  from?: string[]; // 재료 id 목록
+  into?: string[]; // 이걸로 만들 수 있는 상위 아이템
+  depth?: number;
+  maps: Record<string, boolean>;
+}
+
 export interface DDragonChampionList {
   type: 'champion';
   format: string; // 'standAloneComplex'

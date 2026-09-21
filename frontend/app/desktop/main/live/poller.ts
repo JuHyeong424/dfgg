@@ -1,7 +1,7 @@
 import type { GameflowPhase } from '../../types';
 import { fetchItemRecommendations } from '../api/recommendations';
 import { getLcuState, onPhaseChange, setRecommendations } from '../lcu/state';
-import { getChampionNames } from './championNames';
+import { getDDragonData } from './ddragon';
 import { getActivePlayer, getPlayerList } from './endpoints';
 import { buildRecommendationBody, extractItemIds } from './payload';
 import { fetchGameVersion } from '../lcu/service';
@@ -47,7 +47,7 @@ async function tick() {
       patch = currentPatch;
     }
 
-    const championNames = await getChampionNames();
+    const { championNames, componentItemIds } = await getDDragonData();
 
     const players = await getPlayerList();
     const myPlayers = players?.find(
@@ -55,14 +55,14 @@ async function tick() {
     );
 
     if (myPlayers) {
-      const itemIds = extractItemIds(myPlayers);
+      const itemIds = extractItemIds(myPlayers, componentItemIds);
 
       if (!sameItems(itemIds, lastItemIds)) {
-        if (!players || !myRiotId || !patch || !championNames) return;
+        if (!players || !myRiotId || !patch || !championNames || !componentItemIds) return;
 
         console.log('아이템 변경', itemIds);
 
-        const liveInfo = { players, myRiotId, patch, championNames };
+        const liveInfo = { players, myRiotId, patch, championNames, componentItemIds };
 
         // 백엔드에 전달
         const body = buildRecommendationBody(liveInfo);

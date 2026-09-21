@@ -18,6 +18,7 @@ interface BuildParams {
   players: LivePlayer[];
   myRiotId: string;
   patch: string;
+  componentItemIds: Set<number>;
   championNames?: Record<string, string>;
 }
 
@@ -61,10 +62,12 @@ function toEntry(player: LivePlayer, championNames?: Record<string, string>): Ch
   };
 }
 
-// 장신구와 소모품(와드, 물약)은 제외한다.
-export function extractItemIds(player: LivePlayer) {
+// 장신구·소모품(와드, 물약)과 재료 아이템은 제외한다.
+// componentItemIds 에 없는 id 는 통과시킨다 (신규 아이템이 누락되지 않도록).
+export function extractItemIds(player: LivePlayer, componentItemIds: Set<number>) {
   return player.items
     .filter((item) => !item.consumable && item.slot !== TRINKET_SLOT)
+    .filter((item) => !componentItemIds.has(item.itemID))
     .map((item) => item.itemID);
 }
 
@@ -83,6 +86,7 @@ export function buildRecommendationBody({
   players,
   myRiotId,
   patch,
+  componentItemIds,
   championNames,
 }: BuildParams): RecommendationBody | null {
   const me = players.find((player) => isMe(player, myRiotId));
@@ -93,7 +97,7 @@ export function buildRecommendationBody({
 
   return {
     myChampion: toEntry(me, championNames),
-    purchasedItemIds: extractItemIds(me),
+    purchasedItemIds: extractItemIds(me, componentItemIds),
     allies: allies.map((player) => toEntry(player, championNames)),
     enemies: enemies.map((player) => toEntry(player, championNames)),
     tier: 'PLATINUM',
