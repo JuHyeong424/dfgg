@@ -61,4 +61,4 @@ jobs:
         run: |
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy.pem" \
-            dist/ ubuntu@${{ secrets.EC2_HOST_PROD }}:/var/www/dfgg/
+            apps/web/dist/ ubuntu@${{ secrets.EC2_HOST_PROD }}:/var/www/dfgg/
